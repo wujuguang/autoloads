@@ -65,7 +65,7 @@ class DBEntityHelper(object):
         return self.get_query(*self._entity_cols) | query_delete
 
     def update_all(self, **_attributes):
-        return self.get_query(*self._entity_cols) | update(_attributes)
+        return self.get_query(*self._entity_cols) | update(**_attributes)
 
     def refresh(self, entity):
         return self._db_session | refresh(entity)
