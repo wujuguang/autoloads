@@ -1,23 +1,22 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 
+from collections.abc import Iterable
 from datetime import date, datetime
 from decimal import Decimal
 from json import dumps
-from typing import Dict, Iterator
 
 
 def json_data_encode(json_data):
-    u"""可以序列化 datetime等多类型数据.
+    """可以序列化 datetime等多类型数据.
 
         :param json_data
     """
 
     def _any(data):
-        if isinstance(data, Iterator):
-            return_data = _list(data)
-        elif isinstance(data, Dict):
+        if isinstance(data, dict):
             return_data = _dict(data)
+        elif isinstance(data, Iterable) and not isinstance(data, (str, bytes)):
+            return_data = _list(data)
         elif isinstance(data, Decimal):
             return_data = str(data)
         elif isinstance(data, float):

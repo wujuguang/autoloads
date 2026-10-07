@@ -1,5 +1,4 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 
 import copy
 from decimal import Decimal
@@ -51,14 +50,18 @@ class BuildFilter(Parser):
         if hasattr(cls, "filter_attr_dict") and cls.filter_attr_dict:
             # 如果实体类有该项, 并且该项的值为真.
             filter_attr_dict = cls.filter_attr_dict
-            filter_list = map(
-                lambda x: filter_attr_dict[x](getattr(self._entity, x)) if getattr(self._entity, x) is not None else "",
-                filter_attr_dict.keys())
+            filter_list = [
+                filter_attr_dict[x](getattr(self._entity, x))
+                for x in filter_attr_dict
+                if getattr(self._entity, x) is not None
+            ]
         else:
             attributes = cls.columns().keys()
-            filter_list = map(
-                lambda x: getattr(cls, x) == getattr(self._entity, x) if getattr(self._entity, x) else "",
-                attributes)
+            filter_list = [
+                getattr(cls, x) == getattr(self._entity, x)
+                for x in attributes
+                if getattr(self._entity, x)
+            ]
 
         return filter_list
 
@@ -114,8 +117,13 @@ class RequestParser(Parser):
                 if attr in attributes:
                     # 获取数据库列的对应python类型.
                     py_type = attributes[attr].type.python_type
-                    request_parser_dict[attr] = py_type(
-                        args[attr][-1]) if py_type in self.__class__.parser_types else args[attr]
+                    _value = args[attr][-1]
+                    if py_type in self.__class__.parser_types:
+                        request_parser_dict[attr] = py_type(_value)
+                    elif isinstance(_value, bytes):
+                        request_parser_dict[attr] = _value.decode('utf-8')
+                    else:
+                        request_parser_dict[attr] = _value
 
         return request_parser_dict
 

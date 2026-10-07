@@ -1,5 +1,4 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 
 from tornado.log import app_log
 from tornado.options import define, options

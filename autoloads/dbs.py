@@ -1,9 +1,7 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 
-from sqlalchemy import Table
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Table, inspect
+from sqlalchemy.orm import declarative_base, sessionmaker
 
 
 class ModelHelper(object):
@@ -22,11 +20,10 @@ class Models(object):
     def get(self, table_name=None):
         return self.__call__(table_name)
 
-    @classmethod
-    def get_base(cls):
-        if not hasattr(cls, '_base'):
-            cls._base = declarative_base()
-        return cls._base
+    def get_base(self):
+        if not hasattr(self, '_base'):
+            self._base = declarative_base()
+        return self._base
 
     def get_db_session_pool(self):
         if not hasattr(self, 'db_session_pool'):
@@ -54,7 +51,7 @@ class Models(object):
         self.engine = db_engine
         self.expire_on_commit = expire_on_commit
         self.db_session_pool = self.get_db_session_pool()
-        self.table_names = tables if tables else self.engine.table_names()
+        self.table_names = tables if tables else inspect(self.engine).get_table_names()
 
         errors = []
         for _table_ in self.table_names:
@@ -73,7 +70,7 @@ class Models(object):
         if model_name is None:
             model_name = table_name
 
-        kwarg = dict(autoload=True, autoload_with=self.engine, schema=self.schema)
+        kwarg = dict(autoload_with=self.engine, schema=self.schema)
         _table = Table(table_name, self._base.metadata, **kwarg)
 
         kwarg = {'__table__': _table,

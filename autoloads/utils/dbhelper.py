@@ -1,5 +1,4 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 
 from autoloads.utils.dbpipe import sql_query, query_filter, offset, limit, first, \
     get_all, scalar, order_by, group_by, update, add, add_all, delete, query_delete, \

@@ -1,5 +1,4 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 
 from models.models import User
 
@@ -34,10 +33,10 @@ class Test(BaseHandler):
         bf = BuildFilter(cu)
 
         # 根据条件查询实例.
-        cus = User.get_all_by_where(0, 10, *bf())
+        cus = User.get_all_by_where(0, 10, bf())
 
         # 将实例全部转换成字典.
         cus = [cu.json() for cu in cus]
 
         # 创建固定格式的返回数据结构.
-        self.response_json(success=True, message=cus)
+        self.response_json(data=cus, success=True)

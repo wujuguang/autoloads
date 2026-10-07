@@ -1,5 +1,4 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 
 from autoloads.utils import json_encode
 from autoloads.utils.datatype import json_data_encode
@@ -13,7 +12,8 @@ class Entity(object):
     db_operate_cls = DBEntityHelper
 
     def __init__(self, **kwargs):
-        map(lambda x: setattr(self, "%s" % x, kwargs[x]), kwargs)
+        for _key in kwargs:
+            setattr(self, "%s" % _key, kwargs[_key])
 
     def save(self):
         self.__class__.add(self)
@@ -77,7 +77,7 @@ class EntityHelper(object):
             db_operate.commit()
         except Exception as ex:
             db_operate.rollback()
-            raise ex
+            raise
         finally:
             db_operate.close()
 
@@ -88,11 +88,12 @@ class EntityHelper(object):
             db_operate.add_all(entitys)
             if refresh:
                 db_operate.flush()
-                map(lambda x: db_operate.refresh(x), entitys)
+                for _entity in entitys:
+                    db_operate.refresh(_entity)
             db_operate.commit()
         except Exception as ex:
             db_operate.rollback()
-            raise ex
+            raise
         finally:
             db_operate.close()
 
@@ -104,7 +105,7 @@ class EntityHelper(object):
             db_operate.commit()
         except Exception as ex:
             db_operate.rollback()
-            raise ex
+            raise
         finally:
             db_operate.close()
 
@@ -116,7 +117,7 @@ class EntityHelper(object):
             db_operate.commit()
         except Exception as ex:
             db_operate.rollback()
-            raise ex
+            raise
         finally:
             db_operate.close()
 
@@ -128,16 +129,21 @@ class EntityHelper(object):
             db_operate.commit()
         except Exception as ex:
             db_operate.rollback()
-            raise ex
+            raise
         finally:
             db_operate.close()
 
     @classmethod
     def get_scalar_by_where(cls, query_expr, wheres=None):
         db_operate = cls.db_operate_cls(entity_cls=cls, wheres=wheres)
-        _count = db_operate.get_scalar(query_expr)
-        db_operate.commit()
-        db_operate.close()
+        try:
+            _count = db_operate.get_scalar(query_expr)
+            db_operate.commit()
+        except Exception as ex:
+            db_operate.rollback()
+            raise
+        finally:
+            db_operate.close()
         return _count
 
     @classmethod
@@ -146,9 +152,14 @@ class EntityHelper(object):
                                         entity_cols=cols,
                                         wheres=wheres,
                                         order_by_cols=order_by_cols)
-        _statistics = db_operate.get_statistics_by_group(group_by_list, recordindex, pagesize)
-        db_operate.commit()
-        db_operate.close()
+        try:
+            _statistics = db_operate.get_statistics_by_group(group_by_list, recordindex, pagesize)
+            db_operate.commit()
+        except Exception as ex:
+            db_operate.rollback()
+            raise
+        finally:
+            db_operate.close()
         return _statistics
 
     @classmethod
@@ -156,9 +167,14 @@ class EntityHelper(object):
         db_operate = cls.db_operate_cls(entity_cls=cls,
                                         entity_cols=cols,
                                         wheres=wheres)
-        _entity = db_operate.get_first()
-        db_operate.commit()
-        db_operate.close()
+        try:
+            _entity = db_operate.get_first()
+            db_operate.commit()
+        except Exception as ex:
+            db_operate.rollback()
+            raise
+        finally:
+            db_operate.close()
         return _entity
 
     @classmethod
@@ -167,9 +183,14 @@ class EntityHelper(object):
                                         entity_cols=cols,
                                         wheres=wheres,
                                         order_by_cols=order_by_cols)
-        _entity = db_operate.get_first_order_by()
-        db_operate.commit()
-        db_operate.close()
+        try:
+            _entity = db_operate.get_first_order_by()
+            db_operate.commit()
+        except Exception as ex:
+            db_operate.rollback()
+            raise
+        finally:
+            db_operate.close()
         return _entity
 
     @classmethod
@@ -177,9 +198,14 @@ class EntityHelper(object):
         db_operate = cls.db_operate_cls(entity_cls=cls,
                                         entity_cols=cols,
                                         wheres=wheres)
-        entities = db_operate.get_all(recordindex, pagesize)
-        db_operate.commit()
-        db_operate.close()
+        try:
+            entities = db_operate.get_all(recordindex, pagesize)
+            db_operate.commit()
+        except Exception as ex:
+            db_operate.rollback()
+            raise
+        finally:
+            db_operate.close()
         return entities
 
     @classmethod
@@ -188,9 +214,14 @@ class EntityHelper(object):
                                         entity_cols=cols,
                                         wheres=wheres,
                                         order_by_cols=order_by_cols)
-        entities = db_operate.get_all_order_by(recordindex, pagesize)
-        db_operate.commit()
-        db_operate.close()
+        try:
+            entities = db_operate.get_all_order_by(recordindex, pagesize)
+            db_operate.commit()
+        except Exception as ex:
+            db_operate.rollback()
+            raise
+        finally:
+            db_operate.close()
         return entities
 
 

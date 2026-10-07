@@ -1,5 +1,4 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 
 import tornado.web
 from mako.lookup import TemplateLookup
@@ -19,8 +18,10 @@ class _Template(object):
             :param output_encoding:     输出字符串的编码
         """
 
-        if not hasattr(cls, '_instance'):
+        _config = (directories, module_directory, output_encoding, cache_enabled)
+        if not hasattr(cls, '_instance') or getattr(cls, '_instance')._config != _config:
             cls._instance = object.__new__(cls)
+            cls._instance._config = _config
             cls._instance.__init_template(directories, module_directory, output_encoding, cache_enabled)
 
         return cls._instance

@@ -1,17 +1,14 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 
 import functools
 
 from sqlalchemy.engine import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session
 
 from autoloads import ModelHelper
 
 # 修改你自己的数据库连接参数
 data_dsn = "mysql+pymysql://root:12345678@localhost/test_db"
 db_engine = create_engine(data_dsn)
-db_session = scoped_session(sessionmaker(bind=db_engine))()
 
 # 定义你数据库里及对应的表
 MYSQL_DATABASES_TABLES = dict(
@@ -29,7 +26,7 @@ def generate_models(engine, databases_config, database_name, column_prefix='_'):
     """
     _database = database_name
     _tables = databases_config[_database]
-    _models = ModelHelper.get_models(db_engine,
+    _models = ModelHelper.get_models(engine,
                                      tables=_tables,
                                      column_prefix=column_prefix,
                                      schema=_database)

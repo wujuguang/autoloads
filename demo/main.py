@@ -1,5 +1,4 @@
-#!usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -15,7 +14,7 @@ def main():
     application = tornado.web.Application(app(), **options.as_dict())
     http_server = tornado.httpserver.HTTPServer(application, xheaders=True)
     http_server.listen(options.port)
-    tornado.ioloop.IOLoop.instance().start()
+    tornado.ioloop.IOLoop.current().start()
 
 
 if __name__ == "__main__":
