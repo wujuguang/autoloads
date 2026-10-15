@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from autoloads.app import app
 from autoloads.basehandler import BaseRequestHandler
 from autoloads.dbs import ModelHelper, Models

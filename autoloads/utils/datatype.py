@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from collections.abc import Iterable
 from datetime import date, datetime
 from decimal import Decimal
@@ -15,6 +13,8 @@ def json_data_encode(json_data):
     def _any(data):
         if isinstance(data, dict):
             return_data = _dict(data)
+        elif isinstance(data, (bytes, bytearray)):
+            return_data = data.decode('utf-8', errors='replace')
         elif isinstance(data, Iterable) and not isinstance(data, (str, bytes)):
             return_data = _list(data)
         elif isinstance(data, Decimal):
@@ -38,8 +38,9 @@ def json_data_encode(json_data):
     def _dict(data):
         dict_data = {}
         for k, v in data.items():
-            dict_data[k] = _any(v)
+            # key 归一化并确保为字符串(JSON 对象键必须为 str).
+            dict_data[str(_any(k))] = _any(v)
         return dict_data
 
     ret = _any(json_data)
-    return dumps(ret, cls=None, ensure_ascii=False, indent=4)
+    return dumps(ret, ensure_ascii=False, indent=4)

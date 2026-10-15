@@ -1,17 +1,19 @@
-#!/usr/bin/env python
+import logging
 
 from sqlalchemy import Table, inspect
 from sqlalchemy.orm import declarative_base, sessionmaker
 
+logger = logging.getLogger(__name__)
 
-class ModelHelper(object):
+
+class ModelHelper:
 
     @staticmethod
     def get_models(db_engine, tables=None, column_prefix='_', schema=None):
         return Models(db_engine, tables, column_prefix, schema)
 
 
-class Models(object):
+class Models:
     def __call__(self, table_name=None):
         if table_name is None:
             return self.models
@@ -55,15 +57,20 @@ class Models(object):
 
         errors = []
         for _table_ in self.table_names:
-            _table_name = '{0}'.format(_table_)
+            _table_name = f'{_table_}'
             try:
                 self.models[_table_name] = self._generate_model(_table_name)
             except Exception as ex:
-                errors.append('Table Name: %s, Error: %s' % (_table_name, ex))
+                logger.warning('Model generate failed for table %s: %s', _table_name, ex)
+                errors.append(f'Table Name: {_table_name}, Error: {ex}')
 
+        self.errors = errors
         if errors:
-            print('\n', '=' * 40, 'Error In Generate Mode', '=' * 40)
-            print(errors)
+            logger.error('%d table(s) failed to generate models.', len(errors))
+            if not self.models:
+                raise RuntimeError(
+                    f'No models were generated; all {len(self.table_names)} table(s) failed. Errors: {errors}'
+                )
 
     def _generate_model(self, table_name, model_name=None):
 

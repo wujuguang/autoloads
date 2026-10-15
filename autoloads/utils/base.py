@@ -1,11 +1,9 @@
-#!/usr/bin/env python
-
 from autoloads.utils import json_encode
 from autoloads.utils.datatype import json_data_encode
 from autoloads.utils.dbhelper import DBEntityHelper
 
 
-class Entity(object):
+class Entity:
     """包含实体对象的简单操作.
     """
 
@@ -13,7 +11,7 @@ class Entity(object):
 
     def __init__(self, **kwargs):
         for _key in kwargs:
-            setattr(self, "%s" % _key, kwargs[_key])
+            setattr(self, _key, kwargs[_key])
 
     def save(self):
         self.__class__.add(self)
@@ -62,7 +60,7 @@ class Entity(object):
         return self.__str__()
 
 
-class EntityHelper(object):
+class EntityHelper:
     """数据库操作封装.
     """
 

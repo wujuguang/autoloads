@@ -1,11 +1,9 @@
-#!/usr/bin/env python
-
 from autoloads.utils.dbpipe import sql_query, query_filter, offset, limit, first, \
     get_all, scalar, order_by, group_by, update, add, add_all, delete, query_delete, \
     flush, refresh, commit, rollback, close
 
 
-class DBEntityHelper(object):
+class DBEntityHelper:
     def __init__(self, entity_cls, entity_cols=None, wheres=None, order_by_cols=None):
         """
             :param entity_cls:      实体类

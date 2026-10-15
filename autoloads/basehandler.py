@@ -1,12 +1,11 @@
-#!/usr/bin/env python
-
 import tornado.web
 from mako.lookup import TemplateLookup
 
 from autoloads.utils import json_encode
+from autoloads.utils.datatype import json_data_encode
 
 
-class _Template(object):
+class _Template:
     """对第三方模板引擎的封装.
     """
 
@@ -73,7 +72,11 @@ class HttpRequestHandler(tornado.web.RequestHandler):
 
     @staticmethod
     def build_response_json(**kwargs):
-        return json_encode(kwargs)
+        try:
+            return json_encode(kwargs)
+        except TypeError:
+            # Decimal / datetime / date 等非 JSON 原生类型, 回退到多类型序列化.
+            return json_data_encode(kwargs)
 
 
 class BaseRequestHandler(HttpRequestHandler):

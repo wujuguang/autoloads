@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+import importlib
+from pathlib import Path
 
-import os
 from autoloads.utils import json_encode
 
 
-class Tornado(object):
+class Tornado:
     """视图URL处理装饰器.
     """
 
@@ -31,24 +31,15 @@ class Tornado(object):
         """
 
         file_list = []
-        for s in os.listdir(dir_path):
-            new_dir = os.path.join(dir_path, s)
-            if os.path.isfile(new_dir):
-                # 为文件时操作
-                file_dir = os.path.splitext(new_dir)
-                if file_dir[1] == '.py':
-                    # 只取不带后缀的文件名.
-                    _file_name = file_dir[0]
-                    if _file_name.startswith('./'):
-                        _file_name = _file_name[2:]
-                    _file_name = _file_name.split('/')
-                    if not set(Tornado.not_scan_file) & set(_file_name):
-                        # 转换文件路径形式为python路径形式.
-                        _file_name = '.'.join(_file_name)
-                        file_list.append(_file_name)
-            elif os.path.isdir(new_dir):
-                # 为目录时递归
-                file_list.extend(self._get_scan_file(new_dir))
+        for path in Path(dir_path).rglob('*.py'):
+            if not path.is_file():
+                continue
+            # 去掉 .py 后缀, 取路径各段作为模块层级.
+            parts = [p for p in path.with_suffix('').parts if p != '.']
+            if set(Tornado.not_scan_file) & set(parts):
+                # 转换文件路径形式为python路径形式.
+                continue
+            file_list.append('.'.join(parts))
         return file_list
 
     def scan(self, scan_dir):
@@ -59,8 +50,7 @@ class Tornado(object):
 
         _scan_file_list = self._get_scan_file(scan_dir)
         for _scan_file in _scan_file_list:
-            # print((' scan url => ', _scan_file))
-            __import__(_scan_file)
+            importlib.import_module(_scan_file)
 
     def route(self, path='/', **kw):
         """页面请求处理器的装饰器, 用于绑定url地址.
